@@ -1,63 +1,118 @@
 <template>
   <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">todo</h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
+    <div class="todo">
+      <div class="todo__list">
+        <Task
+          v-for="(task, index) in tasks"
+          :key="index"
+          :index="index"
+          :task="task"
+          @update-done="updateDone(index)"
+          @update-task="updateTask"
+          @delete-task="deleteTask(index)"
+        />
+      </div>
+      <div class="todo__add" @click="addTask">
+        <Add />
+        <span class="todo__add-label">新規追加</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+import Add from '@/components/Add'
+
+export default {
+  components: {
+    Add,
+  },
+  data: () => ({
+    tasks: [
+      {
+        name: 'やること１やることやることやることやることやること',
+        isOpen: true,
+      },
+      {
+        name: 'やること２やることやることやることやることやることやることやることやること',
+        isOpen: false,
+      },
+    ],
+  }),
+  methods: {
+    addTask() {
+      this.tasks.push(
+        {
+          name: '',
+          isOpen: true,
+          isNew: true,
+        }
+      )
+    },
+    updateDone(index) {
+      this.tasks[index].isOpen = !this.tasks[index].isOpen
+    },
+    updateTask(index, name) {
+      this.tasks[index].name = name
+    },
+    deleteTask(index) {
+      this.tasks.splice(index, 1)
+    },
+  },
+}
 </script>
 
-<style>
+<style lang="scss" scoped>
 .container {
   margin: 0 auto;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  text-align: center;
 }
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.todo {
+  width: 100%;
+  padding: 0 5.333%;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 60px;
+    background: #2a56f3;
+    border-radius: 30px;
+    cursor: pointer;
+    position: fixed;
+    right: 20px;
+    bottom: 40px;
+  }
+  &__add-label {
+    display: none;
+  }
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
+@media screen and (min-width: 768px) {
+  .todo {
+    &__add {
+      width: auto;
+      height: auto;
+      background: initial;
+      margin-top: 20px;
+      padding: 10px;
+      position: static;
 
-.links {
-  padding-top: 15px;
+      &:hover {
+        background: #eee;
+      }
+    }
+    &__add-label {
+      display: initial;
+    }
+  }
 }
 </style>

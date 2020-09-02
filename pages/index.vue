@@ -27,18 +27,13 @@ export default {
   components: {
     Add,
   },
-  data: () => ({
-    tasks: [
-      {
-        name: 'やること１やることやることやることやることやること',
-        isOpen: true,
-      },
-      {
-        name: 'やること２やることやることやることやることやることやることやることやること',
-        isOpen: false,
-      },
-    ],
-  }),
+  async asyncData(context) {
+    const response = await context.$axios.get('http://localhost:3000/api/todo')
+    const tasks = response.data.todo
+    return {
+      tasks,
+    }
+  },
   methods: {
     addTask() {
       this.tasks.push(

@@ -64,4 +64,10 @@ export default {
    ** See https://nuxtjs.org/api/configuration-build/
    */
   build: {},
+  /*
+   ** express module configuration
+   */
+  serverMiddleware: [
+    '~/api'
+  ],
 }

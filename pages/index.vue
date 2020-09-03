@@ -27,8 +27,8 @@ export default {
   components: {
     Add,
   },
-  async asyncData(context) {
-    const response = await context.$axios.get('http://localhost:3000/api/todo')
+  async asyncData({ $axios }) {
+    const response = await $axios.get('/todo')
     const tasks = response.data.todo
     return {
       tasks,

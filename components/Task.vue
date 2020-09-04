@@ -30,6 +30,11 @@ export default {
     Delete,
     TaskName,
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.$emit('mounted-task')
+    })
+  },
   props: {
     index: {
       type: Number,
@@ -72,11 +77,6 @@ export default {
       this.clickEdit()
     }
   },
-  mounted() {
-    if (this.task.isNew) {
-      this.clickEdit()
-    }
-  }
 }
 </script>
 

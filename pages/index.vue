@@ -7,6 +7,8 @@
           :key="index"
           :index="index"
           :task="task"
+          ref="task"
+          @mounted-task="mountedTask"
           @update-done="updateDone(index)"
           @update-task="updateTask"
           @delete-task="deleteTask(index)"
@@ -27,30 +29,55 @@ export default {
   components: {
     Add,
   },
+  data: () => ({
+    isAddTask: false,
+  }),
   async asyncData({ $axios }) {
-    const response = await $axios.get('/todo')
+    const response = await $axios.get('/?limit=50')
     const tasks = response.data.todo
     return {
       tasks,
     }
   },
   methods: {
-    addTask() {
-      this.tasks.push(
+    mountedTask() {
+      if (this.isAddTask) {
+        this.$refs.task[0].clickEdit()
+        this.isAddTask = !this.isAddTask
+      }
+    },
+    async addTask() {
+      const response = await this.$axios.post('/add', {
+        name: '',
+        isOpen: true,
+      })
+      this.tasks.unshift(
         {
+          id: response.data.id,
           name: '',
           isOpen: true,
           isNew: true,
         }
       )
+      this.isAddTask = true
     },
-    updateDone(index) {
+    async updateDone(index) {
+      const id = this.tasks[index].id
+      const response = await this.$axios.put(`/task/${id}`, {
+        isOpen: this.tasks[index].isOpen ? false : true,
+      })
       this.tasks[index].isOpen = !this.tasks[index].isOpen
     },
-    updateTask(index, name) {
+    async updateTask(index, name) {
+      const id = this.tasks[index].id
+      const response = await this.$axios.put(`/task/${id}`, {
+        name: name,
+      })
       this.tasks[index].name = name
     },
-    deleteTask(index) {
+    async deleteTask(index) {
+      const id = this.tasks[index].id
+      const response = await this.$axios.delete(`/task/${id}`)
       this.tasks.splice(index, 1)
     },
   },

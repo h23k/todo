@@ -59,7 +59,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'http://localhost:3000/api/todo',
   },
   /*
    ** Build configuration
@@ -72,4 +72,10 @@ export default {
   serverMiddleware: [
     '~/api'
   ],
+  /*
+   ** nuxt server configuration
+   */
+  // server: {
+  //   host: '0.0.0.0',
+  // },
 }

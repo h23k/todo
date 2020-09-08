@@ -14,8 +14,15 @@ app.get('/', (req, res) => {
     password: 'mysql',
   })
   connection.connect()
-  const sql = 'select * from todo where delete_flg = 0 order by task_state, create_dt desc, update_dt desc;'
-  connection.query(sql, (error, results, fields) => {
+  let limit = ''
+  let values = []
+  const argLimit = Number.parseInt(req.query.limit)
+  if (!Number.isNaN(argLimit)) {
+    limit = 'limit ?'
+    values.push(argLimit)
+  }
+  const sql = `select * from todo where delete_flg = 0 order by task_state, create_dt desc, update_dt desc ${limit};`
+  connection.query(sql, values, (error, results, fields) => {
     if (error) throw error
     const todo = results.map(result => {
       return {

@@ -15,7 +15,9 @@
         />
       </div>
       <div class="todo__add" @click="addTask">
-        <Add />
+        <span class="icon">
+          <Add />
+        </span>
         <span class="todo__add-label">新規追加</span>
       </div>
     </div>
@@ -33,7 +35,7 @@ export default {
     isAddTask: false,
   }),
   async asyncData({ $axios }) {
-    const response = await $axios.get('/?limit=50')
+    const response = await $axios.get('/?limit=10')
     const tasks = response.data.todo
     return {
       tasks,
@@ -84,11 +86,16 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .container {
   margin: 0 auto;
   display: flex;
   justify-content: center;
+}
+
+.icon {
+  display: inline-block;
+  line-height: 1;
 }
 
 .todo {
@@ -134,6 +141,7 @@ export default {
     }
     &__add-label {
       display: initial;
+      margin-left: 0.5em;
     }
   }
 }

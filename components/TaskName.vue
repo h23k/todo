@@ -46,6 +46,7 @@ export default {
 .task-name {
   flex: 1;
   min-width: 0;
+  margin: 0 3px;
 
   &__disp {
     color: #444;

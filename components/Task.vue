@@ -89,7 +89,7 @@ export default {
   margin-top: 20px;
   border: 1px solid #696969;
   border-radius: 3px;
-  padding: 0 10px;
+  padding: 3px;
 
   &__main {
     display: flex;
@@ -106,15 +106,25 @@ export default {
   }
 
   .icon {
-    display: inline-block;
-
     &--btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       padding: 10px;
+      line-height: 1;
       cursor: pointer;
+
+      &:hover {
+        background: #eee;
+      }
     }
 
     &--disabled {
       cursor: default;
+
+      &:hover {
+        background: initial;
+      }
     }
   }
 }

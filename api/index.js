@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
     limit = 'limit ?'
     values.push(argLimit)
   }
-  const sql = `select * from todo where delete_flg = 0 order by task_state, create_dt desc, update_dt desc ${limit};`
+  const sql = `select * from todo where delete_flg = 0 order by task_state, greatest(\`create_dt\`, ifnull(\`update_dt\`, \`create_dt\`)) desc ${limit};`
   connection.query(sql, values, (error, results, fields) => {
     if (error) throw error
     const todo = results.map(result => {

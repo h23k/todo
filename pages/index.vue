@@ -3,15 +3,12 @@
     <div class="todo">
       <div class="todo__list">
         <Task
-          v-for="(task, index) in tasks"
-          :key="index"
-          :index="index"
+          v-for="task in tasks"
+          :key="task.id"
           :task="task"
-          ref="task"
-          @mounted-task="mountedTask"
-          @update-done="updateDone(index)"
+          @update-done="doneTask"
           @update-task="updateTask"
-          @delete-task="deleteTask(index)"
+          @delete-task="deleteTask"
         />
       </div>
       <div class="todo__add" @click="addTask">
@@ -31,56 +28,40 @@ export default {
   components: {
     Add,
   },
-  data: () => ({
-    isAddTask: false,
-  }),
-  async asyncData({ $axios }) {
-    const response = await $axios.get('/?limit=10')
-    const tasks = response.data.todo
-    return {
-      tasks,
-    }
+  async fetch({ $axios, store }) {
+    const response = await $axios.get('/?limit=20')
+    const todo = response.data.todo
+    store.commit('todo/setTasks', todo)
+  },
+  computed: {
+    tasks() {
+      return this.$store.state.todo.tasks
+    },
   },
   methods: {
-    mountedTask() {
-      if (this.isAddTask) {
-        this.$refs.task[0].clickEdit()
-        this.isAddTask = !this.isAddTask
-      }
-    },
     async addTask() {
+      const name = ''
       const response = await this.$axios.post('/add', {
-        name: '',
-        isOpen: true,
+        name: name,
       })
-      this.tasks.unshift(
-        {
-          id: response.data.id,
-          name: '',
-          isOpen: true,
-          isNew: true,
-        }
-      )
-      this.isAddTask = true
+      const id = response.data.id
+      this.$store.commit('todo/insert', { id, name })
     },
-    async updateDone(index) {
-      const id = this.tasks[index].id
+    async doneTask({ id, isOpen }) {
       const response = await this.$axios.put(`/task/${id}`, {
-        isOpen: this.tasks[index].isOpen ? false : true,
+        isOpen: isOpen,
       })
-      this.tasks[index].isOpen = !this.tasks[index].isOpen
+      this.$store.commit('todo/done', id)
     },
-    async updateTask(index, name) {
-      const id = this.tasks[index].id
+    async updateTask({ id, name }) {
       const response = await this.$axios.put(`/task/${id}`, {
         name: name,
       })
-      this.tasks[index].name = name
+      this.$store.commit('todo/updateName', { id, name })
     },
-    async deleteTask(index) {
-      const id = this.tasks[index].id
+    async deleteTask(id) {
       const response = await this.$axios.delete(`/task/${id}`)
-      this.tasks.splice(index, 1)
+      this.$store.commit('todo/remove', id)
     },
   },
 }

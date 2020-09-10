@@ -4,7 +4,7 @@
       <span class="icon icon--btn" @click="clickDone">
         <Done :is-done="isDone" />
       </span>
-      <TaskName :value="name" :is-edit="isEdit" @focus-out="focusOut" />
+      <TaskName :value="task.name" :is-edit="isEdit" @focus-out="focusOut" />
     </div>
     <div v-show="isMenuOpen" class="task__menu">
       <span class="task__edit icon icon--btn" :class="{ 'icon--disabled': isDone }" @click="clickEdit">
@@ -32,14 +32,13 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.$emit('mounted-task')
+      const index = this.$store.getters['todo/getInsertIndex']
+      if (index !== -1) {
+        this.clickEdit()
+      }
     })
   },
   props: {
-    index: {
-      type: Number,
-      required: true,
-    },
     task: {
       type: Object,
       required: true,
@@ -50,30 +49,27 @@ export default {
     isEdit: false,
   }),
   computed: {
-    name() {
-      return this.task.name
-    },
-    isOpen() {
-      return this.task.isOpen
-    },
     isDone() {
       return !this.task.isOpen
     },
   },
   methods: {
     clickDone() {
-      this.$emit('update-done')
+      const id = this.task.id
+      const isOpen = !this.task.isOpen
+      this.$emit('update-done', { id, isOpen })
     },
     clickEdit() {
-      if (this.isOpen) {
+      if (this.task.isOpen) {
         this.isEdit = !this.isEdit
       }
     },
     clickDelete() {
-      this.$emit('delete-task')
+      this.$emit('delete-task', this.task.id)
     },
-    focusOut(value) {
-      this.$emit('update-task', this.index, value)
+    focusOut(name) {
+      const id = this.task.id
+      this.$emit('update-task', { id, name })
       this.clickEdit()
     }
   },

@@ -49,7 +49,6 @@ app.post('/add', (req, res) => {
   const sql = 'insert into todo set ?'
   const values = {
     task_title: req.body.name,
-    task_state: req.body.isOpen ? 'open' : 'done',
   }
   connection.query(sql, values, (error, results, fields) => {
     if (error) throw error

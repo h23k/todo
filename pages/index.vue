@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import Add from '@/components/Add'
 
 export default {
@@ -34,34 +35,39 @@ export default {
     store.commit('todo/setTasks', todo)
   },
   computed: {
-    tasks() {
-      return this.$store.state.todo.tasks
-    },
+    ...mapState(
+      'todo',
+      ['tasks'],
+    ),
   },
   methods: {
+    ...mapMutations(
+      'todo',
+      ['insert', 'remove', 'updateName', 'done'],
+    ),
     async addTask() {
       const name = ''
       const response = await this.$axios.post('/add', {
         name: name,
       })
       const id = response.data.id
-      this.$store.commit('todo/insert', { id, name })
+      this.insert({ id, name })
     },
     async doneTask({ id, isOpen }) {
       const response = await this.$axios.put(`/task/${id}`, {
         isOpen: isOpen,
       })
-      this.$store.commit('todo/done', id)
+      this.done(id)
     },
     async updateTask({ id, name }) {
       const response = await this.$axios.put(`/task/${id}`, {
         name: name,
       })
-      this.$store.commit('todo/updateName', { id, name })
+      this.updateName({ id, name })
     },
     async deleteTask(id) {
       const response = await this.$axios.delete(`/task/${id}`)
-      this.$store.commit('todo/remove', id)
+      this.remove(id)
     },
   },
 }

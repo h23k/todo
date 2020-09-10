@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Done from '@/components/Done'
 import Edit from '@/components/Edit'
 import Delete from '@/components/Delete'
@@ -32,7 +33,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      const index = this.$store.getters['todo/getInsertIndex']
+      const index = this.getInsertIndex
       if (index !== -1) {
         this.clickEdit()
       }
@@ -52,6 +53,10 @@ export default {
     isDone() {
       return !this.task.isOpen
     },
+    ...mapGetters(
+      'todo',
+      ['getInsertIndex'],
+    ),
   },
   methods: {
     clickDone() {

@@ -16,6 +16,11 @@
 
 <script>
 export default {
+  updated() {
+    if (this.isEdit) {
+      this.$refs.input.focus()
+    }
+  },
   props: {
     value: {
       type: String,
@@ -25,11 +30,6 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  updated() {
-    if (this.isEdit) {
-      this.$refs.input.focus()
-    }
   },
   methods: {
     focusOut() {

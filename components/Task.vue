@@ -39,16 +39,16 @@ export default {
       }
     })
   },
+  data: () => ({
+    isMenuOpen: true,
+    isEdit: false,
+  }),
   props: {
     task: {
       type: Object,
       required: true,
     },
   },
-  data: () => ({
-    isMenuOpen: true,
-    isEdit: false,
-  }),
   computed: {
     isDone() {
       return !this.task.isOpen

@@ -1,3 +1,6 @@
+import bodyParser from 'body-parser'
+import session from 'express-session'
+
 export default {
   /*
    ** Nuxt rendering mode
@@ -59,7 +62,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: 'http://localhost:3000/api/todo',
+    baseURL: 'http://localhost:3000/api',
   },
   /*
    ** Build configuration
@@ -70,7 +73,16 @@ export default {
    ** express module configuration
    */
   serverMiddleware: [
-    '~/api'
+    bodyParser.json(),
+    session({
+      secret: 'super-secret-key',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { maxAge: 60000 },
+    }),
+
+    '~/api/index.js',
+    '~/api/auth.js',
   ],
   /*
    ** nuxt server configuration

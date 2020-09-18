@@ -1,5 +1,13 @@
 <template>
   <div class="container">
+    <div class="header">
+      <div class="header__username">
+        {{ this.getAuthUsername }}
+      </div>
+      <div>
+        <a href="#" class="header__logout" @click.prevent="logoutWith">Logout</a>
+      </div>
+    </div>
     <div class="todo">
       <div class="todo__list">
         <Task
@@ -22,15 +30,16 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import Add from '@/components/Add'
 
 export default {
   components: {
     Add,
   },
+  middleware: 'auth',
   async fetch({ $axios, store }) {
-    const response = await $axios.get('/?limit=20')
+    const response = await $axios.get('/todo?limit=20')
     const todo = response.data.todo
     store.commit('todo/setTasks', todo)
   },
@@ -39,34 +48,46 @@ export default {
       'todo',
       ['tasks'],
     ),
+    ...mapGetters(
+      'auth',
+      ['getAuthUsername'],
+    ),
   },
   methods: {
     ...mapMutations(
       'todo',
       ['insert', 'remove', 'updateName', 'done'],
     ),
+    ...mapActions(
+      'auth',
+      ['logout'],
+    ),
+    logoutWith() {
+      this.logout()
+      location.href = location.origin + '/login'
+    },
     async addTask() {
       const name = ''
-      const response = await this.$axios.post('/add', {
+      const response = await this.$axios.post('/todo/add', {
         name: name,
       })
       const id = response.data.id
       this.insert({ id, name })
     },
     async doneTask({ id, isOpen }) {
-      const response = await this.$axios.put(`/task/${id}`, {
+      const response = await this.$axios.put(`/todo/task/${id}`, {
         isOpen: isOpen,
       })
       this.done(id)
     },
     async updateTask({ id, name }) {
-      const response = await this.$axios.put(`/task/${id}`, {
+      const response = await this.$axios.put(`/todo/task/${id}`, {
         name: name,
       })
       this.updateName({ id, name })
     },
     async deleteTask(id) {
-      const response = await this.$axios.delete(`/task/${id}`)
+      const response = await this.$axios.delete(`/todo/task/${id}`)
       this.remove(id)
     },
   },
@@ -75,8 +96,8 @@ export default {
 
 <style lang="scss">
 .container {
-  margin: 0 auto;
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -85,8 +106,19 @@ export default {
   line-height: 1;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  background: #2a56f3;
+  padding: 10px 5.333%;
+
+  &__logout {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
 .todo {
-  width: 100%;
   padding: 0 5.333%;
 
   &__list {

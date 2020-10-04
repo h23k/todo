@@ -1,20 +1,60 @@
 <template>
   <div class="container">
-    <form @submit.prevent="login">
+    <form v-if="isLogin" @submit.prevent="login">
       <p v-if="formError" class="error">
         {{ formError }}
       </p>
       <fieldset>
-        <label for="username">Username:</label>
+        <label for="username">ユーザ名:</label>
+        <input v-model="formUsername" type="text" id="username" name="username" placeholder="ユーザ名を入力してください。" />
+      </fieldset>
+      <fieldset>
+        <label for="password">パスワード:</label>
+        <input v-model="formPassword" type="password" id="password" name="password" placeholder="パスワードを入力してください。" />
+      </fieldset>
+      <button type="submit">
+        ログイン
+      </button>
+      <div class="create">
+        <a href="#" @click.prevent="showCreateUser">
+          ユーザを作成
+        </a>
+      </div>
+    </form>
+    <form v-else @submit.prevent="create">
+      <p v-if="formError" class="error">
+        {{ formError }}
+      </p>
+      <fieldset>
+        <label for="username">ユーザ名:</label>
         <input v-model="formUsername" type="text" id="username" name="username" placeholder="username" />
       </fieldset>
       <fieldset>
-        <label for="password">Password:</label>
-        <input v-model="formPassword" type="password" id="password" name="password" />
+        <label for="passowrd">パスワード:</label>
+        <input v-model="formPassword" type="password" id="password" name="password" placeholder="password" />
       </fieldset>
-      <button type="submit">
-        Login
+      <fieldset class="col-half">
+        <div>
+          <label for="firstname">姓</label>
+          <input v-model="formFirstname" type="text" id="firstname" name="firstname" placeholder="佐藤" />
+        </div>
+        <div>
+          <label for="lastname">名</label>
+          <input v-model="formLastname" type="text" id="lastname" name="lastname" placeholder="太郎" />
+        </div>
+      </fieldset>
+      <fieldset>
+        <label for="email">メールアドレス</label>
+        <input v-model="formEmail" type="text" id="email" name="email" placeholder="username@example.com" />
+      </fieldset>
+      <button>
+        ユーザを作成
       </button>
+      <div class="cancel">
+        <a href="#" @click.prevent="showLogin">
+          戻る
+        </a>
+      </div>
     </form>
   </div>
 </template>
@@ -22,9 +62,13 @@
 <script>
 export default {
   data: () => ({
+    isLogin: true,
     formError: null,
     formUsername: '',
     formPassword: '',
+    formFirstname: '',
+    formLastname: '',
+    formEmail: '',
   }),
   methods: {
     async login() {
@@ -33,14 +77,45 @@ export default {
           username: this.formUsername,
           password: this.formPassword,
         })
-        this.formUsername = ''
-        this.formPassword = ''
-        this.formError = null
-        location.href = location.origin
+        this.$router.push('/')
       } catch(e) {
         this.formError = e.message
       }
     },
+    async create() {
+      try {
+        await this.$axios.post('user/create', {
+          username: this.formUsername,
+          password: this.formPassword,
+          firstname: this.formFirstname,
+          lastname: this.formLastname,
+          email: this.formEmail,
+        })
+        this.showLogin()
+      } catch(e) {
+        if (e.response && e.response.data) {
+          this.formError = e.response.data.error
+        } else {
+          this.formError = e.message
+        }
+      }
+    },
+    clearForm() {
+      this.formError = null
+      this.formUsername = ''
+      this.formPassword = ''
+      this.formFirstname = ''
+      this.formLastname = ''
+      this.formEmail = ''
+    },
+    showCreateUser() {
+      this.isLogin = false
+      this.clearForm()
+    },
+    showLogin() {
+      this.isLogin = true
+      this.clearForm()
+    }
   },
 }
 </script>
@@ -61,6 +136,17 @@ export default {
   color: #ff2a2a;
 }
 
+.create,
+.cancel {
+  margin-top: 20px;
+  font-size: 0.8em;
+  text-align: center;
+
+  a {
+    text-decoration: none;
+  }
+}
+
 form {
   width: 30%;
   margin: 0 auto;
@@ -69,6 +155,12 @@ form {
     margin-bottom: 20px;
     border: none;
     padding: 0;
+
+    &.col-half {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 10px;
+    }
   }
 
   input[type="text"],
@@ -80,6 +172,7 @@ form {
     padding: 0.5em;
     font-size: 1rem;
   }
+
   button {
     width: 100%;
     height: 2.5em;

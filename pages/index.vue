@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header">
       <div class="header__username">
-        {{ this.getAuthUsername }}
+        Hi, {{ this.getAuthUsername }}
       </div>
       <div>
         <a href="#" class="header__logout" @click.prevent="logoutWith">Logout</a>
@@ -64,7 +64,7 @@ export default {
     ),
     logoutWith() {
       this.logout()
-      location.href = location.origin + '/login'
+      this.$router.push('/login')
     },
     async addTask() {
       const name = ''
@@ -109,12 +109,20 @@ export default {
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background: #2a56f3;
   padding: 10px 5.333%;
 
+  &__username {
+    color: #fff;
+  }
   &__logout {
     color: #fff;
     text-decoration: none;
+
+    &:hover {
+      font-weight: bold;
+    }
   }
 }
 

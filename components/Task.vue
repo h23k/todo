@@ -128,5 +128,10 @@ export default {
       }
     }
   }
+
+  &--done {
+    border-color: #afafaf;
+    box-shadow: initial;
+  }
 }
 </style>

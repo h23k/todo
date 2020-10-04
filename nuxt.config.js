@@ -83,6 +83,7 @@ export default {
 
     '~/api/index.js',
     '~/api/auth.js',
+    '~/api/user.js',
   ],
   /*
    ** nuxt server configuration

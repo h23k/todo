@@ -18,20 +18,34 @@ app.post('/login', (req, res) => {
     user: 'mysql',
     password: 'mysql',
   })
-  const sql = 'select account, f_name, l_name, email from user where account = ? and password = ?'
-  const where = [username, password]
+  const sql = 'select account, password, f_name, l_name, email from user where account = ?'
+  const where = [username]
   connection.connect()
   connection.query(sql, where, (error, results, fields) => {
     if (error) throw error
     if (results.length === 1) {
-      const authUser = {
-        username: results[0].account,
-        firstname: results[0].f_name,
-        lastname: results[0].l_name,
-        email: results[0].email,
-      }
-      req.session.authUser = authUser
-      res.json(authUser)
+      const account = results[0].account
+      const hashPw = results[0].password
+      const f_name = results[0].f_name
+      const l_name = results[0].l_name
+      const email = results[0].email
+
+      const bcrypt = require('bcrypt')
+      bcrypt.compare(password, hashPw)
+      .then(result => {
+        if (result) {
+          const authUser = {
+            username: account,
+            firstname: f_name,
+            lastname: l_name,
+            email: email,
+          }
+          req.session.authUser = authUser
+          res.json(authUser)
+        } else {
+          res.status(401).json({ error: `Bad credentials. ${username}` })
+        }
+      })
     } else {
       res.status(401).json({ error: `Bad credentials. ${username}` })
     }

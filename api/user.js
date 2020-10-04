@@ -13,28 +13,33 @@ app.post('/create', (req, res) => {
     return
   }
 
-  const mysql = require('mysql')
-  const connection = mysql.createConnection({
-    host: 'localhost',
-    port: '3307',
-    database: 'my_test',
-    user: 'mysql',
-    password: 'mysql',
+  const bcrypt = require('bcrypt')
+  const salt = bcrypt.genSaltSync(10)
+  bcrypt.hash(password, salt)
+  .then(hash => {
+    const mysql = require('mysql')
+    const connection = mysql.createConnection({
+      host: 'localhost',
+      port: '3307',
+      database: 'my_test',
+      user: 'mysql',
+      password: 'mysql',
+    })
+    const sql = 'insert into user set ?'
+    const values = {
+      account: username,
+      password: hash,
+      f_name: firstname,
+      l_name: lastname,
+      email: email,
+    }
+    connection.connect()
+    connection.query(sql, values, (error, results, fields) => {
+      if (error) throw error
+      res.json({ results })
+    })
+    connection.end()
   })
-  const sql = 'insert into user set ?'
-  const values = {
-    account: username,
-    password: password,
-    f_name: firstname,
-    l_name: lastname,
-    email: email,
-  }
-  connection.connect()
-  connection.query(sql, values, (error, results, fields) => {
-    if (error) throw error
-    res.json({ results })
-  })
-  connection.end()
 })
 
 module.exports = {

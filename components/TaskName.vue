@@ -7,8 +7,9 @@
         class="task-name__input"
         ref="input"
         :value="value"
-        @keyup.13="focusOut"
-        @focusout="doneEdit($event)"
+        @keydown.enter="enterKey"
+        @keyup.enter="focusOut"
+        @focusout="doneEdit"
       />
     </div>
   </div>
@@ -21,6 +22,9 @@ export default {
       this.$refs.input.focus()
     }
   },
+  data: () => ({
+    isEnterKey: false,
+  }),
   props: {
     value: {
       type: String,
@@ -32,8 +36,14 @@ export default {
     },
   },
   methods: {
+    enterKey() {
+      this.isEnterKey = true
+    },
     focusOut() {
-      this.$refs.input.blur()
+      if (this.isEnterKey) {
+        this.isEnterKey = false
+        this.$refs.input.blur()
+      }
     },
     doneEdit() {
       this.$emit('focus-out', this.$refs.input.value)
